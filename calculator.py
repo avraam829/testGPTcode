@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import messagebox
+
+from tkinter import ttk, messagebox
 
 class Calculator:
     """Simple calculator supporting basic operations."""
@@ -51,8 +52,7 @@ LANGUAGES = {
         "result": "Результат",
         "language": "Язык",
         "error": "Ошибка",
-    },
-}
+    }
 
 def main() -> None:
     calc = Calculator()

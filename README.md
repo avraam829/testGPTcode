@@ -1,8 +1,12 @@
 # GUI Calculator
 
 This repository contains a simple GUI calculator built with Tkinter. It supports six operations:
+ codex/remove-repository-and-create-calculator-aw3yse
 addition, subtraction, multiplication, division, power, and modulo. Operations are chosen via
 dedicated buttons, and the interface can be switched between English and Russian at runtime.
+
+addition, subtraction, multiplication, division, power, and modulo.
+
 
 ## Usage
 
