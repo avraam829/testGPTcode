@@ -1,4 +1,5 @@
 import tkinter as tk
+
 from tkinter import ttk, messagebox
 
 class Calculator:
@@ -27,51 +28,87 @@ class Calculator:
         return a % b
 
 OPERATIONS = {
-    "Add": Calculator.add,
-    "Subtract": Calculator.subtract,
-    "Multiply": Calculator.multiply,
-    "Divide": Calculator.divide,
-    "Power": Calculator.power,
-    "Modulo": Calculator.mod,
+    "+": Calculator.add,
+    "-": Calculator.subtract,
+    "*": Calculator.multiply,
+    "/": Calculator.divide,
+    "^": Calculator.power,
+    "%": Calculator.mod,
 }
+
+LANGUAGES = {
+    "English": {
+        "title": "Calculator",
+        "num1": "Number 1",
+        "num2": "Number 2",
+        "result": "Result",
+        "language": "Language",
+        "error": "Error",
+    },
+    "Русский": {
+        "title": "Калькулятор",
+        "num1": "Число 1",
+        "num2": "Число 2",
+        "result": "Результат",
+        "language": "Язык",
+        "error": "Ошибка",
+    }
 
 def main() -> None:
     calc = Calculator()
 
     root = tk.Tk()
-    root.title("Calculator")
+    root.geometry("360x220")
     root.resizable(False, False)
 
-    tk.Label(root, text="Number 1").grid(row=0, column=0, padx=5, pady=5)
+    lang_var = tk.StringVar(value="English")
+
+    language_label = tk.Label(root)
+    language_label.grid(row=0, column=0, padx=5, pady=5)
+    lang_menu = tk.OptionMenu(root, lang_var, *LANGUAGES.keys())
+    lang_menu.grid(row=0, column=1, padx=5, pady=5)
+
+    label_num1 = tk.Label(root)
+    label_num1.grid(row=1, column=0, padx=5, pady=5)
     entry_a = tk.Entry(root)
-    entry_a.grid(row=0, column=1, padx=5, pady=5)
+    entry_a.grid(row=1, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Number 2").grid(row=1, column=0, padx=5, pady=5)
+    label_num2 = tk.Label(root)
+    label_num2.grid(row=2, column=0, padx=5, pady=5)
     entry_b = tk.Entry(root)
-    entry_b.grid(row=1, column=1, padx=5, pady=5)
-
-    tk.Label(root, text="Operation").grid(row=2, column=0, padx=5, pady=5)
-    op_var = tk.StringVar(value="Add")
-    op_menu = ttk.Combobox(root, textvariable=op_var, values=list(OPERATIONS.keys()), state="readonly")
-    op_menu.grid(row=2, column=1, padx=5, pady=5)
+    entry_b.grid(row=2, column=1, padx=5, pady=5)
 
     result_var = tk.StringVar()
+    label_result = tk.Label(root)
+    label_result.grid(row=4, column=0, padx=5, pady=5)
+    tk.Entry(root, textvariable=result_var, state="readonly").grid(row=4, column=1, padx=5, pady=5)
 
-    def calculate() -> None:
+    operations_frame = tk.Frame(root)
+    operations_frame.grid(row=3, column=0, columnspan=2, pady=5)
+
+    def perform(operation) -> None:
         try:
             a = float(entry_a.get())
             b = float(entry_b.get())
-            operation_name = op_var.get()
-            operation = OPERATIONS[operation_name]
             result = operation(calc, a, b)
             result_var.set(str(result))
         except Exception as exc:  # pylint: disable=broad-except
-            messagebox.showerror("Error", str(exc))
+            strings = LANGUAGES[lang_var.get()]
+            messagebox.showerror(strings["error"], str(exc))
 
-    tk.Button(root, text="Calculate", command=calculate).grid(row=3, column=0, columnspan=2, pady=5)
+    for idx, (symbol, func) in enumerate(OPERATIONS.items()):
+        tk.Button(operations_frame, text=symbol, width=5, command=lambda f=func: perform(f)).grid(row=0, column=idx, padx=2)
 
-    tk.Label(root, text="Result").grid(row=4, column=0, padx=5, pady=5)
-    tk.Entry(root, textvariable=result_var, state="readonly").grid(row=4, column=1, padx=5, pady=5)
+    def update_language(*_args) -> None:
+        strings = LANGUAGES[lang_var.get()]
+        root.title(strings["title"])
+        language_label.config(text=strings["language"])
+        label_num1.config(text=strings["num1"])
+        label_num2.config(text=strings["num2"])
+        label_result.config(text=strings["result"])
+
+    lang_var.trace_add("write", update_language)
+    update_language()
 
     root.mainloop()
 
